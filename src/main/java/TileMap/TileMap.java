@@ -105,12 +105,6 @@ public class TileMap {
                 tiles[y][x].draw(g, y , x);
             }
         }
-        if(GAME_OVER){
-            g.drawString("GAME OVER!",300,300);
-        } else if(WIN){
-            g.drawString("WIN!",300,300);
-
-        }
     }
 
     public int getWidth() {
@@ -153,5 +147,9 @@ public class TileMap {
 
     public Tile[][] getTiles() {
         return tiles;
+    }
+
+    public void reuseTile(int destX, int destY) {
+        tiles[destY][destX].reuse();
     }
 }

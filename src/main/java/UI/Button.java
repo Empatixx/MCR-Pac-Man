@@ -7,9 +7,9 @@ import java.awt.*;
 import static java.awt.Color.black;
 
 public abstract class Button {
-    private int x,y;
+    protected int x,y;
     private boolean hover;
-    private String textRender;
+    protected String textRender;
     public Button(int x, int y, String textRender){
         this.x = x;
         this.y = y;
@@ -28,10 +28,12 @@ public abstract class Button {
         g.setColor(black);
         g.drawRect(x,y,100,50);
     }
-    public void tryClick(Rectangle mouse){
+    public boolean tryClick(Rectangle mouse){
         if(intersects(mouse)){
             clickEvent();
+            return true;
         }
+        return false;
     }
     public abstract void clickEvent();
 
@@ -40,5 +42,10 @@ public abstract class Button {
     }
     public boolean intersects(Rectangle mouse) {
         return mouse.intersects(new Rectangle(x, y, 100, 50));
+    }
+
+    public void reposition(int x, int y){
+        this.x = x;
+        this.y = y;
     }
 }

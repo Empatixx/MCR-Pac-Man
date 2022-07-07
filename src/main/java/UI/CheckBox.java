@@ -1,7 +1,5 @@
 package UI;
 
-import Main.Utils;
-
 import java.awt.*;
 
 import static java.awt.Color.*;
@@ -22,8 +20,6 @@ public class CheckBox {
             g.setColor(Color.white);
         }
         g.fillRect(x,y,50,50);
-        g.setColor(black);
-        Font f = g.getFont();
         g.setColor(black);
         g.drawRect(x,y,50,50);
         if(enabled){
@@ -48,8 +44,8 @@ public class CheckBox {
         return mouse.intersects(new Rectangle(x, y, 50, 50));
     }
 
-    public boolean recentlyActivated(){
-        return System.currentTimeMillis() - timeActivated < 2000 && enabled;
+    public boolean recentlyChanged(){
+        return System.currentTimeMillis() - timeActivated < 2000;
     }
 
     public boolean isEnabled() {

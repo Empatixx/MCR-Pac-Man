@@ -1,0 +1,13 @@
+{
+	"SIRKA": 5,
+	"VYSKA": 5,
+	"START": { "X": 1, "Y": 1, "E": 20 },
+	"CIL": { "X": 5, "Y": 4 },
+	"PLAN": [
+		"V,J22,V,V,V",
+		"V,Z,J10,Z,V",
+		"V,V,J2,B,B3",
+		"V,V,Z,Z,V",
+		"B,V,B2,V,V"
+	]
+}

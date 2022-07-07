@@ -3,6 +3,7 @@ package Main;
 import TileMap.Player;
 import TileMap.TileMap;
 import UI.CheckBox;
+import UI.OptionsButton;
 import UI.RestartButton;
 import UI.SolveButton;
 import TileMap.PathFinder;
@@ -12,8 +13,8 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 
 public class Panel extends JPanel implements Runnable{
-    public static int WIDTH = 500;
-    public static int HEIGHT = 500;
+    public static int WIDTH;
+    public static int HEIGHT;
 
     private Thread thread;
 
@@ -22,22 +23,34 @@ public class Panel extends JPanel implements Runnable{
 
     private RestartButton restartButton;
     private SolveButton solveButton;
-    private CheckBox checkBox;
-
+    private OptionsButton optionsButton;
+    private CheckBox safeModeCheckBox;
+    private CheckBox pathTypeCheckBox;
     public static boolean safeMode;
 
     public Panel(){
         this.setBackground(Color.black);
         this.setDoubleBuffered(true);
-        tm = new TileMap("map.json");
+        tm = new TileMap("Maps\\map4.json");
         player = new Player(tm);
         WIDTH = tm.getTileSize()*tm.getWidth()+225;
         HEIGHT = tm.getTileSize()*tm.getHeight()+50;
+
+        int minWIDTH = 425;
+        int minHEIGHT = 300;
+        if(WIDTH < minWIDTH) WIDTH = minWIDTH;
+        if(HEIGHT < minHEIGHT) HEIGHT = minHEIGHT;
+
         this.setPreferredSize(new Dimension(WIDTH,HEIGHT));
 
-        restartButton = new RestartButton(WIDTH-200,20,player,tm);
-        solveButton = new SolveButton(WIDTH-200,90,new PathFinder(player,tm));
-        checkBox = new CheckBox(WIDTH-75,20);
+        safeModeCheckBox = new CheckBox(WIDTH-75,20);
+        pathTypeCheckBox = new CheckBox(WIDTH-75,90);
+
+        PathFinder pathFinder = new PathFinder(tm);
+        restartButton = new RestartButton(WIDTH-200,160,pathFinder,player,tm);
+        solveButton = new SolveButton(WIDTH-200,90,pathFinder,pathTypeCheckBox);
+        optionsButton = new OptionsButton(WIDTH-200,20);
+
     }
 
     /**
@@ -65,6 +78,29 @@ public class Panel extends JPanel implements Runnable{
         }
     }
     public void update() {
+        if(optionsButton.hasChangedMap()){
+            tm = new TileMap("Maps\\"+optionsButton.getSelectedMap()+".json");
+            player = new Player(tm);
+            WIDTH = tm.getTileSize()*tm.getWidth()+225;
+            HEIGHT = tm.getTileSize()*tm.getHeight()+50;
+
+            int minWIDTH = 425;
+            int minHEIGHT = 300;
+            if(WIDTH < minWIDTH) WIDTH = minWIDTH;
+            if(HEIGHT < minHEIGHT) HEIGHT = minHEIGHT;
+            setPreferredSize(new Dimension(WIDTH,HEIGHT));
+            Main.window.pack();
+
+            safeModeCheckBox = new CheckBox(WIDTH-75,20);
+            pathTypeCheckBox = new CheckBox(WIDTH-75,90);
+
+            PathFinder pathFinder = new PathFinder(tm);
+            optionsButton.reposition(WIDTH-200,20);
+
+            restartButton = new RestartButton(WIDTH-200,160,pathFinder,player,tm);
+            solveButton = new SolveButton(WIDTH-200,90,pathFinder,pathTypeCheckBox);
+        }
+
         Point mouseP = getMousePosition();
         if(mouseP != null){
             Rectangle rect = new Rectangle(mouseP.x,mouseP.y,1,1);
@@ -75,8 +111,15 @@ public class Panel extends JPanel implements Runnable{
             if(solveButton.intersects(rect)) solveButton.setHover(true);
             else solveButton.setHover(false);
 
-            if(checkBox.intersects(rect)) checkBox.setHover(true);
-            else checkBox.setHover(false);
+            if(safeModeCheckBox.intersects(rect)) safeModeCheckBox.setHover(true);
+            else safeModeCheckBox.setHover(false);
+
+            if(pathTypeCheckBox.intersects(rect)) pathTypeCheckBox.setHover(true);
+            else pathTypeCheckBox.setHover(false);
+
+            optionsButton.calculateHoverIndex(rect);
+            if(optionsButton.intersects(rect)) optionsButton.setHover(true);
+            else optionsButton.setHover(false);
         }
     }
     public void paintComponent(Graphics g){
@@ -90,6 +133,13 @@ public class Panel extends JPanel implements Runnable{
         g.setFont(newFont);
 
         tm.draw(g2);
+
+        restartButton.draw(g2);
+        solveButton.draw(g2);
+        optionsButton.draw(g2);
+        safeModeCheckBox.draw(g2);
+        pathTypeCheckBox.draw(g2);
+
         player.draw(g2);
 
         if(TileMap.GAME_OVER){
@@ -100,7 +150,16 @@ public class Panel extends JPanel implements Runnable{
             g.setColor(Color.green);
             Utils.drawCenteredString(g,"You have won!",
                     new Rectangle(0,HEIGHT-50,WIDTH,50), g.getFont());
-        } else if (checkBox.recentlyActivated()){
+        } else if (pathTypeCheckBox.recentlyChanged()){
+            g.setColor(Color.orange);
+            if(pathTypeCheckBox.isEnabled()){
+                Utils.drawCenteredString(g,"solving: the most energy path",
+                        new Rectangle(0,HEIGHT-50,WIDTH,50), g.getFont());
+            } else {
+                Utils.drawCenteredString(g,"solving: the shortest path",
+                        new Rectangle(0,HEIGHT-50,WIDTH,50), g.getFont());
+            }
+        } else if (safeModeCheckBox.recentlyChanged() && safeModeCheckBox.isEnabled()){
             g.setColor(Color.orange);
             Utils.drawCenteredString(g,"Safe mode activated!",
                     new Rectangle(0,HEIGHT-50,WIDTH,50), g.getFont());
@@ -109,10 +168,6 @@ public class Panel extends JPanel implements Runnable{
             Utils.drawCenteredString(g,"Energy: "+player.getEnergy(),
                     new Rectangle(0,HEIGHT-50,WIDTH,50), g.getFont());
         }
-
-        restartButton.draw(g2);
-        solveButton.draw(g2);
-        checkBox.draw(g2);
 
         g2.dispose();
     }
@@ -144,10 +199,11 @@ public class Panel extends JPanel implements Runnable{
         int destY = player.getY();
 
         if(destX != x || destY != y){ // player moved
-            safeMode = checkBox.isEnabled();
+            safeMode = safeModeCheckBox.isEnabled();
             player.removeEnergy(1);
             boolean sucessfulMove = tm.moveEvent(destY-1,destX-1,player);
             if(!sucessfulMove){ // safe mode or endless wall
+                tm.reuseTile(destX-1,destY-1);
                 player.setPosition(x,y);
                 player.addEnergy(1);
             }
@@ -158,8 +214,12 @@ public class Panel extends JPanel implements Runnable{
         Point mouseP = getMousePosition();
         Rectangle rect = new Rectangle(mouseP.x,mouseP.y,1,1);
 
+        boolean click = optionsButton.tryClick(rect);
+        if(click) return;
+
         restartButton.tryClick(rect);
         solveButton.tryClick(rect);
-        checkBox.tryClick(rect);
+        safeModeCheckBox.tryClick(rect);
+        pathTypeCheckBox.tryClick(rect);
     }
 }

@@ -20,4 +20,12 @@ public abstract class Tile {
     public int getEnergyCost() {
         return energyCost;
     }
+
+    public boolean isUsed() {
+        return used;
+    }
+
+    public void setUsed(boolean used) {
+        this.used = used;
+    }
 }
