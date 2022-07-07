@@ -31,7 +31,7 @@ public class Panel extends JPanel implements Runnable{
     public Panel(){
         this.setBackground(Color.black);
         this.setDoubleBuffered(true);
-        tm = new TileMap("Maps\\map4.json");
+        tm = new TileMap("Maps\\map1.json");
         player = new Player(tm);
         WIDTH = tm.getTileSize()*tm.getWidth()+225;
         HEIGHT = tm.getTileSize()*tm.getHeight()+50;
@@ -89,6 +89,7 @@ public class Panel extends JPanel implements Runnable{
             if(WIDTH < minWIDTH) WIDTH = minWIDTH;
             if(HEIGHT < minHEIGHT) HEIGHT = minHEIGHT;
             setPreferredSize(new Dimension(WIDTH,HEIGHT));
+            Main.window.setPreferredSize(null);
             Main.window.pack();
 
             safeModeCheckBox = new CheckBox(WIDTH-75,20);
@@ -206,6 +207,8 @@ public class Panel extends JPanel implements Runnable{
                 tm.reuseTile(destX-1,destY-1);
                 player.setPosition(x,y);
                 player.addEnergy(1);
+                TileMap.GAME_OVER = false;
+                TileMap.WIN = false;
             }
         }
     }
