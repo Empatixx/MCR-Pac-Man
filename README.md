@@ -12,7 +12,7 @@ MŠMT MČR ZADÁNÍ 2019 / MSMT Championship task 2019<br>
 ⚫ You should dodge walls when you can<br>
 ⚫ You should also dodge bombs when you can<br>
 ⚫ They will take your energy, bombs only once, walls always<br>
-⚫ When you reach 0 energy you lose<br>
+⚫ When you reach 0 energy you will lose<br>
 
 ![image](https://user-images.githubusercontent.com/26182195/177795703-130ff063-7337-43c2-8cc3-092173e95f89.png)
 ![image](https://user-images.githubusercontent.com/26182195/177795952-7e6c8adb-7af0-447c-9d72-aac72be289c7.png)
