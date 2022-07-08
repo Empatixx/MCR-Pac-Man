@@ -3,6 +3,13 @@ package Main;
 import java.awt.*;
 
 public class Utils {
+    /**
+     * Just some function that makes our drawn text centered
+     * @param g - graphics2D
+     * @param text - our text
+     * @param rect - rect what will makes our border for text in which is centered
+     * @param font - font
+     */
     public static void drawCenteredString(Graphics g, String text, Rectangle rect, Font font) {
         // Get the FontMetrics
         FontMetrics metrics = g.getFontMetrics(font);

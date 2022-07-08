@@ -217,9 +217,11 @@ public class Panel extends JPanel implements Runnable{
         Point mouseP = getMousePosition();
         Rectangle rect = new Rectangle(mouseP.x,mouseP.y,1,1);
 
+        // checks if user
         boolean click = optionsButton.tryClick(rect);
         if(click) return;
 
+        //checks if user clicked something
         restartButton.tryClick(rect);
         solveButton.tryClick(rect);
         safeModeCheckBox.tryClick(rect);

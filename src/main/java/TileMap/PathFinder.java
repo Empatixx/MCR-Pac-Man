@@ -14,12 +14,21 @@ public class PathFinder {
     public PathFinder(TileMap tm){
         tileMap = tm;
     }
+
+    /**
+     * Function for searching the path
+     */
     public void findWay(){
         shortest = null;
         mostEnergy = null;
         PathCell start = new PathCell(null,tileMap.getStartX()-1, tileMap.getStartY()-1,0,tileMap.getStartEnergy());
         findWayFromCell(start);
     }
+
+    /**
+     * Function that finds our path from startPoint to destination point (goal)
+     * @param startPoint - startPoint from that path will start
+     */
     public void findWayFromCell(PathCell startPoint){
         Tile[][] tiles = tileMap.getTiles();
         int height = tileMap.getHeight();
@@ -73,32 +82,37 @@ public class PathFinder {
             }
 
         } while (!opened.isEmpty());
-        shortest = getTheShortestPath(paths);
-        mostEnergy = getTheMostEnergyPath(paths);
+
+        getTheShortestPath(paths);
+        getTheMostEnergyPath(paths);
     }
-    private Path getTheShortestPath(LinkedList<Path> paths){
-        //Path shortest = null;
+
+    /**
+     * Searchs for the shortest path from arg, if there is not any, the previous the shortest path remains
+     * @param paths - found paths
+     */
+    private void getTheShortestPath(LinkedList<Path> paths){
         for(Path p : paths){
             if(shortest == null || shortest.finalCost > p.finalCost) shortest = p;
         }
-        //System.out.println("FCOST: "+shortest.finalCost+" ENERGY:"+shortest.finalEnergy);
-        return shortest;
     }
-    public Path getTheMostEnergyPath(LinkedList<Path> paths){
-        //Path mostEnergy = null;
+    /**
+     * Searchs for the most energy path from arg, if there is not any, the previous the most energy path remains
+     * @param paths - found paths
+     */
+    public void getTheMostEnergyPath(LinkedList<Path> paths){
         for(Path p : paths){
             if(mostEnergy == null || mostEnergy.finalEnergy < p.finalEnergy){
                 mostEnergy = p;
-                PathCell cell;
-                while((cell = p.get()) != null){
-                    System.out.println("X: "+cell.x+" Y: "+cell.y+" E:"+cell.energyLeft);
-                }
-                System.out.println("==========");
             }
         }
-        //System.out.println("FCOST: "+mostEnergy.finalCost+" ENERGY:"+mostEnergy.finalEnergy);
-        return mostEnergy;
     }
+
+    /**
+     * Adds new PathCells that can lead to final destionation
+     * @param opened - all pathcells that are already opened
+     * @param prev - PathCell from which are other connected
+     */
     private void addCells(Queue<PathCell> opened, PathCell prev){
         boolean top, bottom, right, left;
         int x = prev.x;
@@ -143,6 +157,13 @@ public class PathFinder {
             }
         }
     }
+
+    /**
+     * returns if pathcell was already used in algorithm and it is not necessary to use again
+     * @param newCell - created PathCell to check
+     * @param closed - closed pathcells
+     * @return false if cant be used, true if can
+     */
     private boolean wasntOpenedYet(PathCell newCell, LinkedList<PathCell> closed){
         for(PathCell cell : closed){
             if(cell.x == newCell.x && newCell.y == cell.y) return false;
@@ -165,6 +186,9 @@ public class PathFinder {
             previousCell = prev;
         }
 
+        /**
+         * Re-do dijkstra algorithm, clearing closed and also opened arraylist
+         */
         public void setNewPathChain() {
             this.newPathChain = true;
         }
@@ -219,6 +243,12 @@ public class PathFinder {
         shortest = null;
         mostEnergy = null;
     }
+
+    /**
+     * Checks if tile in which is pathcell was already used, like bombs or foods
+     * @param cell - pathcell
+     * @return false if was used, true if not
+     */
     private boolean wasTileAlreadyNotUsed(PathCell cell){
         PathCell prev = cell;
         while((prev = prev.previousCell) != null){
