@@ -8,9 +8,9 @@ MŠMT MČR ZADÁNÍ 2019 / MSMT Championship task 2019<br>
 <h1>Game explaination:</h1>
 ⚫ Your goal is to reach the flag<br>
 ⚫ Per each your move you spend 1 energy<br>
-⚫ You must collect food to get your energy<br>
-⚫ You should dodge walls when you can<br>
-⚫ You should also dodge bombs when you can<br>
+⚫ You must collect food to get your energy (green tiles)<br>
+⚫ You should dodge walls when you can (black tiles)<br>
+⚫ You should also dodge bombs when you can (red tiles)<br>
 ⚫ They will take your energy, bombs only once, walls always<br>
 ⚫ When you reach 0 energy you will lose<br>
 
